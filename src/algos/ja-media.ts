@@ -1,19 +1,20 @@
-import type { DatetimeString } from "@atproto/lex"
-import { app } from '../lexicons/index.js'
-import type { AppContext } from '../util/config.js'
+import { type QueryParams } from '../lexicon/types/app/bsky/feed/getFeedSkeleton'
+import { type AppContext } from '../util/config'
 
-export const shortname = 'whats-alf'
+// max 15 chars
+export const shortname = 'ja-media'
 
-export const handler = async (ctx: AppContext, params: app.bsky.feed.getFeedSkeleton.$Params) => {
+export const handler = async (ctx: AppContext, params: QueryParams) => {
   let builder = ctx.db
     .selectFrom('post')
     .selectAll()
     .orderBy('indexedAt', 'desc')
     .orderBy('cid', 'desc')
+    .where('isMedia', '=', 'true')
     .limit(params.limit)
 
   if (params.cursor) {
-    const timeStr = new Date(parseInt(params.cursor, 10)).toISOString() as DatetimeString
+    const timeStr = new Date(parseInt(params.cursor, 10)).toISOString()
     builder = builder.where('post.indexedAt', '<', timeStr)
   }
   const res = await builder.execute()

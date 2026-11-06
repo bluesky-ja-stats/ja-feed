@@ -1,8 +1,8 @@
 import dotenv from 'dotenv'
 import inquirer from 'inquirer'
-import { Agent, BlobRef, CredentialSession } from '@atproto/api'
+import { AtpAgent, BlobRef, AppBskyFeedDefs } from '@atproto/api'
 import fs from 'fs/promises'
-import { app } from '../dist/lexicons/index.js'
+import { ids } from '../src/lexicon/lexicons'
 
 const run = async () => {
   dotenv.config()
@@ -69,9 +69,8 @@ const run = async () => {
     process.env.FEEDGEN_SERVICE_DID ?? `did:web:${process.env.FEEDGEN_HOSTNAME}`
 
   // only update this if in a test environment
-  const session = new CredentialSession(new URL(service ?? 'https://bsky.social'))
-  await session.login({ identifier: handle, password})
-  const agent = new Agent(session)
+  const agent = new AtpAgent({ service: service ? service : 'https://bsky.social' })
+  await agent.login({ identifier: handle, password})
 
   let avatarRef: BlobRef | undefined
   if (avatar) {
@@ -84,27 +83,23 @@ const run = async () => {
       throw new Error('expected png or jpeg')
     }
     const img = await fs.readFile(avatar)
-    const blobRes = await agent.com.atproto.repo.uploadBlob(img, {
+    const blobRes = await agent.api.com.atproto.repo.uploadBlob(img, {
       encoding,
     })
     avatarRef = blobRes.data.blob
   }
 
-  await agent.com.atproto.repo.putRecord({
-    repo: agent.did ?? '',
-    collection: app.bsky.feed.generator.$nsid,
+  await agent.api.com.atproto.repo.putRecord({
+    repo: agent.session?.did ?? '',
+    collection: ids.AppBskyFeedGenerator,
     rkey: recordName,
-    validate: true,
     record: {
       did: feedGenDid,
       displayName: displayName,
       description: description,
       avatar: avatarRef,
       createdAt: new Date().toISOString(),
-      contentMode: videoOnly ? app.bsky.feed.defs.ContentModeVideo : app.bsky.feed.defs.ContentModeUnspecified,
-      acceptsInteractions: true,
-      labels: undefined,
-      descriptionFacets: undefined,
+      contentMode: videoOnly ? AppBskyFeedDefs.CONTENTMODEVIDEO : AppBskyFeedDefs.CONTENTMODEUNSPECIFIED,
     },
   })
 

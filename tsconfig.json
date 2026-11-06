@@ -1,48 +1,20 @@
 {
-  "$schema": "https://json.schemastore.org/tsconfig",
-  "extends": ["@tsconfig/node22/tsconfig.json"],
   "compilerOptions": {
-    "composite": true,
-
-    "checkJs": true,
-    "strict": true,
-    "allowUnusedLabels": false,
-    "allowUnreachableCode": false,
-    "exactOptionalPropertyTypes": false,
-    "noFallthroughCasesInSwitch": false,
-    "noImplicitAny": false,
-    "noImplicitReturns": false,
-    "noUnusedLocals": true,
-    "noUnusedParameters": false,
-
-    "skipLibCheck": true,
-    "allowSyntheticDefaultImports": true,
-    "forceConsistentCasingInFileNames": true,
+    "lib": [
+      "ESNext",
+    ],
+    "outDir": "dist",
+    "module": "CommonJS",
+    "target": "ES6",
     "esModuleInterop": true,
-    "isolatedModules": true,
-    "preserveSymlinks": false,
-    "useDefineForClassFields": true,
-
-    "moduleResolution": "node16",
-    "resolveJsonModule": true,
-    "rewriteRelativeImportExtensions": true,
-    "verbatimModuleSyntax": true,
-    "types": [],
-
-    "noErrorTruncation": true,
-    "declaration": true,
-    "declarationMap": true,
-    "inlineSources": true,
-    "sourceMap": true,
-    "jsx": "preserve",
-    "module": "Node20",
-    "target": "ES2023",
-
-    "rootDir": "./src",
-    "outDir": "./dist"
+    "moduleResolution": "node",
+    "alwaysStrict": true,
+    "allowUnreachableCode": false,
+    "strictNullChecks": true,
+    "skipLibCheck": true
   },
-  "typeAcquisition": {
-    "enable": false
-  },
-  "include": ["./src"]
+  "include": ["./src/**/*.ts"],
+  "exclude": [
+    "node_modules"
+  ]
 }

@@ -1,6 +1,7 @@
 import dotenv from 'dotenv'
-import { Agent, CredentialSession } from '@atproto/api'
-import { app } from '../dist/lexicons/index.js'
+import { AtpAgent, BlobRef } from '@atproto/api'
+import fs from 'fs/promises'
+import { ids } from '../src/lexicon/lexicons'
 import inquirer from 'inquirer'
 
 const run = async () => {
@@ -48,13 +49,12 @@ const run = async () => {
   }
 
   // only update this if in a test environment
-  const session = new CredentialSession(new URL(service ?? 'https://bsky.social'))
-  await session.login({ identifier: handle, password})
-  const agent = new Agent(session)
+  const agent = new AtpAgent({ service: service ? service : 'https://bsky.social' })
+  await agent.login({ identifier: handle, password })
 
-  await agent.com.atproto.repo.deleteRecord({
-    repo: agent.did ?? '',
-    collection: app.bsky.feed.generator.$nsid,
+  await agent.api.com.atproto.repo.deleteRecord({
+    repo: agent.session?.did ?? '',
+    collection: ids.AppBskyFeedGenerator,
     rkey: recordName,
   })
 
