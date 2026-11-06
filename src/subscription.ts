@@ -20,6 +20,7 @@ export const handleEvent = async (evt: IngesterEvent, ctx: AppContext): Promise<
     if (evt.collection === app.bsky.feed.post.$nsid && isPost(evt.record)) {
       let searchtext: string = evt.record.text
       let isMedia: boolean = false
+      let isV: boolean = false
       if (evt.record.embed) {
         if (isImages(evt.record.embed)) {
           isMedia = true
@@ -31,6 +32,7 @@ export const handleEvent = async (evt: IngesterEvent, ctx: AppContext): Promise<
         }
         if (isVideo(evt.record.embed)) {
           isMedia = true
+          isV = true
           searchtext += `\n${evt.record.embed.alt}`
         }
       }
@@ -43,7 +45,7 @@ export const handleEvent = async (evt: IngesterEvent, ctx: AppContext): Promise<
               cid: evt.cid.toString(),
               indexedAt: new Date().toISOString() as DatetimeString,
               isMedia: `${isMedia}`,
-              isVideo: `${isVideo(evt.record.embed ?? {})}`,
+              isVideo: `${isV}`,
             })
             .onConflict((oc) => oc.doNothing())
             .execute()
